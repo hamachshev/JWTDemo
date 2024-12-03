@@ -31,7 +31,8 @@ class Program
             multiLineInput += line + "\n";
         }
 
-        string formattedJson = @$"{multiLineInput}".Trim('\n');
+        // string formattedJson = @$"{multiLineInput}".Trim('\n');
+        string formattedJson = multiLineInput.Trim('\n');
         byte [] payload = Encoding.UTF8.GetBytes(formattedJson);
         string payloadbase64 = Base64UrlEncoder.Encode(payload);
         
@@ -50,7 +51,7 @@ class Program
         byte [] hash = SHA256.Create().ComputeHash(bytes);
         byte[] publicKey;
         byte[] signed;
-        using (var publicPrivate = new RSACryptoServiceProvider())
+        using (var publicPrivate = new RSACryptoServiceProvider(2048))
         {
             string publicKeyPem = ExportPublicKeyToPem(publicPrivate);
             string privateKeyPem = ExportPrivateKeyToPem(publicPrivate);
