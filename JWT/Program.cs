@@ -15,6 +15,7 @@ class Program
                           "typ": "JWT"
                         }
                         """;
+        header.Trim('\n');
         string headerBase64 = Base64UrlEncoder.Encode(Encoding.UTF8.GetBytes(header));
         Console.WriteLine("Enter payload, for example:");
         Console.WriteLine("{");
@@ -24,15 +25,14 @@ class Program
         Console.WriteLine(" }");
         Console.WriteLine("and then type END <enter>");
         string line;
-        string multiLineInput = """
-                                
-                                """;
+        string multiLineInput = "";
         while ((line = Console.ReadLine()) != "END")
         {
-            multiLineInput += line + Environment.NewLine;
+            multiLineInput += line + "\n";
         }
-        multiLineInput.Trim('\n');
-        byte [] payload = Encoding.UTF8.GetBytes(multiLineInput);
+
+        string formattedJson = @$"{multiLineInput}".Trim('\n');
+        byte [] payload = Encoding.UTF8.GetBytes(formattedJson);
         string payloadbase64 = Base64UrlEncoder.Encode(payload);
         
         Console.WriteLine(sign(headerBase64, payloadbase64));
@@ -60,7 +60,7 @@ class Program
 
             Console.WriteLine("\nPrivate Key:");
             Console.WriteLine(privateKeyPem);
-            signed = publicPrivate.Encrypt(hash, true);
+            signed = publicPrivate.SignHash(hash, CryptoConfig.MapNameToOID("SHA256"));
         }
 
         string final = concat + "." + Base64UrlEncoder.Encode(signed);
